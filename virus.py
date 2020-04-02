@@ -2,6 +2,7 @@ import random
 from medellin import Person
 from typing import List
 import itertools
+import numpy as np
 
 def initial_infect(people: List[Person], proportion):
 
@@ -34,3 +35,7 @@ def compute_possibles_infection(people_after_day : List [Person], infection_pro:
                     print (f"sorry {person.name} you are new positive covid!")
                     print(f"your vector is {person.vector}")
                     break
+
+def count_infected(people : List [Person]):
+    counts = list(map(lambda p: p.status == 'i', people))
+    return(np.sum(counts))
