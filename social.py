@@ -4,6 +4,12 @@ from typing import List
 import itertools
 
 
+class Contact(object):
+    def __init__(self, someone : Person, timeevent):
+        self.someone = someone
+        self.timeevent = timeevent
+
+
 
 def meets(people_in_zone : List[Person], pro_contact_zone, contact_per_zone = 1, timeevent = ''):
 

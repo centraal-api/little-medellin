@@ -6,7 +6,7 @@ import pandas as pd
 if __name__ == "__main__":
     # generate the persons:
     population = 20
-    persons : List[Person] = [Person(f'person_{i}') for i in range(population)]
+    persons : List[Person] = [Person(f'person_{i}', stereotype=None) for i in range(population)]
     persons = initial_infect(persons,1)
     days = 20
     time_unit_per_day = 2 # 0 = sun 1 = night
