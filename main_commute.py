@@ -28,36 +28,36 @@ if __name__ == "__main__":
     passive_person_res = Stereotype('passive_person', st['passive_person_res_d'], 
         st['passive_person_n'], public_transport = True)
     
-    workers = [Person(f'worker_{i}', stereotype=active_person) for i in range(1)]
-    workers_public = [Person(f'p_worker_{i}', stereotype=active_person_public) for i in range(2)]
-    homers = [Person(f'homers_{i}', stereotype=passive_person) for i in range(4)]
-    dayers = [Person(f'dayers_{i}', stereotype=passive_person_res) for i in range(4)]
+    my_spots = {'h': home, 'w': office, 'n': market} # per zone in the next main
 
+    workers = [Person(f'worker_{i}', stereotype=active_person,my_spots=my_spots) for i in range(1)]
+    workers_public = [Person(f'p_worker_{i}', stereotype=active_person_public, my_spots=my_spots) for i in range(2)]
+    homers = [Person(f'homers_{i}', stereotype=passive_person, my_spots=my_spots) for i in range(4)]
+    dayers = [Person(f'dayers_{i}', stereotype=passive_person_res, my_spots=my_spots) for i in range(4)]
     simulation_days = 10
-    all_city = []
-    [all_city.append(p) for p in workers]
-    [all_city.append(p) for p in workers_public]
-    [all_city.append(p) for p in homers]
-    [all_city.append(p) for p in dayers]
+    infection_pro = 0.2
 
-    home.update_population(all_city)
+    cols = ['day', 'counts']
+    results = pd.DataFrame(columns=cols, index=range(simulation_days))
 
-    for d in range(simulation_days):
+    medayork = City('medayork', [home, office, market], public_transport=transportation, 
+        citizens=[workers, workers_public, homers, dayers])
+
+    home.update_population(medayork.citizens)
+
+    for day in range(simulation_days):
 
         for d_o_n in range(2):
+            for ts in range(3):
+                timeevent = f'd{day}_h{ts}'
+                medayork.pulse(d_o_n)
+                medayork.public_commute(timeevent, infection_pro)                        
+                medayork.commute_and_act(timeevent, infection_pro)
 
-            if (d_o_n ==0):
-                
-                for ts in range(3):
-                    
+        
+        results.loc[day].counts = count_infected(medayork.citizens)
+        results.loc[day].day = f'd{day}'
+        medayork.reset_contacts()
 
-                    
-                
-
-            else:
-                #night!
-
-
-
-
-    
+    print("finish the simulation")
+    results.to_csv("results.csv", index = False)

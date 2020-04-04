@@ -28,7 +28,7 @@ def compute_possibles_infection(people_after_day : List [Person], infection_pro:
             for contact in person.contacts:
                 someone = contact.someone
                 coin = random.random()
-                condition = (someone.status == 'i') and (coin < infection_pro) and (person.status != 'i')
+                condition = (someone.status == 'i') and (coin < infection_pro) and (person.status != 'i') # ask for vector and check time
                 if (condition): 
                     person.status = 'i'
                     person.update_vector(someone.name, contact.timeevent)
