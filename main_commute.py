@@ -67,6 +67,7 @@ if __name__ == "__main__":
                     ts_count += 1
                     medayork.reset_contacts()
                     virus.remove_population(medayork.citizens,timeevent)
+                    
             else:
                 for ts in range(2):
                     timeevent = f'd{day}_h{ts_count}'
@@ -77,6 +78,7 @@ if __name__ == "__main__":
                     ts_count += 1
                     medayork.reset_contacts()
                     virus.remove_population(medayork.citizens,timeevent)
+                    
 
         p_suceptible, p_infected, p_removed = medayork.sir_population_count() 
         results.loc[day].suceptible = p_suceptible

@@ -36,11 +36,12 @@ def infection (person, person_contact, current_time: str):
 
 def remove_population(people, current_time_event):
     for person in people:
-        person_infection_day, person_infection_hour = toolbox.get_day_hour(person.vector[1])
-        current_day, current_hour = toolbox.get_day_hour(current_time_event)
-        removing_condition = ((person.status == 'i') and ((current_day-person_infection_day) > properties.REMOVING_TIME) and (current_hour >= person_infection_hour))
-        if removing_condition:
-            person.status = 'r'        
+        if person.status == 'i':
+            person_infection_day, person_infection_hour = toolbox.get_day_hour(person.vector[1])
+            current_day, current_hour = toolbox.get_day_hour(current_time_event)
+            removing_condition = ((current_day-person_infection_day) > properties.REMOVING_TIME) and (current_hour >= person_infection_hour)
+            if removing_condition:
+                person.status = 'r'        
 
 
 
