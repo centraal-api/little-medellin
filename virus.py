@@ -6,12 +6,11 @@ import properties
 def infection (person, person_contact, current_time: str):
     incubation_time = properties.INCUBATION_TIME
     infection_base_prob = properties.INFECTION_BASE_PROB
-    if (person.status == 'r') or (person_contact.status == 'r') or (person.status == person_contact.status):
+    if (person.status == 'r') or (person_contact.someone.status == 'r') or (person.status == person_contact.someone.status):
         return True
-    
-    incubation_precond = (person_contact.status == 'i') and (person_contact.vector[0] != "")
+    incubation_precond = (person_contact.someone.status == 'i') and (person_contact.someone.vector[0] != "")
     if incubation_precond:
-        partner_infection_date = person_contact.vector[1]
+        partner_infection_date = person_contact.someone.vector[1]
         day_infected, hour_infected = toolbox.get_day_hour(partner_infection_date)
         current_day, current_hour = toolbox.get_day_hour(current_time)
         if ((current_day-day_infected) >= incubation_time) and (current_hour >= hour_infected):
@@ -19,7 +18,7 @@ def infection (person, person_contact, current_time: str):
             coin = random.random()
             if coin < infection_prob:
                 person.status = 'i'
-                person.update_vector(person_contact.name, current_time) 
+                person.update_vector(person_contact.someone.name, current_time) 
                 print (f"sorry {person.name} you are new positive covid!")
                 print(f"your vector is {person.vector}")
                        
@@ -29,7 +28,7 @@ def infection (person, person_contact, current_time: str):
         coin = random.random()
         if coin < infection_prob:
             person.status = 'i'
-            person.update_vector(person_contact.name, current_time)
+            person.update_vector(person_contact.someone.name, current_time)
             print (f"sorry {person.name} you are new positive covid!")
             print(f"your vector is {person.vector}")
     return True
