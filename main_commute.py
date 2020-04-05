@@ -3,6 +3,7 @@ from social import Person, Stereotype, Location
 import pandas as pd
 import json
 import virus
+import seaborn as sns
 #import seaborn as sns
 
 
@@ -39,7 +40,7 @@ if __name__ == "__main__":
     dayers = [Person(f'dayers_{i}', stereotype=passive_person_res, my_spots=my_spots) for i in range(50)]
     
     cols = ['day', 'suceptible', 'infected', 'removed']
-    results = pd.DataFrame(columns=cols, index=range(simulation_days))
+    results = pd.DataFrame(columns=cols, index=range(simulation_days), dtype=int)
 
     medayork = City('medayork', [home, office, market], public_transport=transportation, 
         citizens=[workers, workers_public, homers, dayers])
@@ -84,8 +85,12 @@ if __name__ == "__main__":
         results.loc[day].infected = p_infected
         results.loc[day].removed = p_removed
         print(f' the d{day} we have ' , p_suceptible, p_infected, p_removed, " suceptible, infected, removed")
-        results.loc[day].day = f'd{day}'
-
+        results.loc[day].day = day
+        
     print("finish the simulation")
     #TODO plot curve SIR model
     results.to_csv("results.csv", index = False)
+    results = pd.melt(results,id_vars='day',value_vars=["suceptible","infected","removed"], var_name="status")
+    print(results.dtypes)
+    ax = sns.relplot(x='day',y='value',hue='status',data=results, kind="line", height=10,aspect=3)
+    ax.savefig('sir_curve.png')

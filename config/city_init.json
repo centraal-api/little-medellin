@@ -1,0 +1,21 @@
+{ "locations": 
+    { 
+    "h":{ "high": 0.30, "medium":0.60, "low":0.10, "proportion":0.60, "contact_prob": 0.05 },
+    "w":{"high":0.70, "medium":0.20 , "low":0.10, "proportion":0.30, "contact_prob": 0.05 },
+    "n":{"high": 0.30, "medium":0.60, "low":0.10, "proportion":0.10, "contact_prob": 0.02 }    
+    },
+"people":
+{
+    "homers" : 0.60,
+    "worker":0.10,
+    "dayers": 0.10,
+    "public_workers": 0.20   
+},
+"suceptibles":100000,
+"total_locations": 1000,
+"name":"Little Medallo",
+"public_trans_contact_prob": 0.08,
+"bad_habits":1.0,
+"social_distancing": 1.0,
+"init_infected": 1
+}

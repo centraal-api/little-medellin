@@ -77,7 +77,7 @@ class City:
         return(self.citizens.copy())
 
     def sir_population_count(self):
-        return self.count_suceptible(), self.count_infected(),self.count_removed() 
+        return int(self.count_suceptible()), int(self.count_infected()),int(self.count_removed()) 
 
             
 
