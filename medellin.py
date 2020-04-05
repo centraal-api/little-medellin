@@ -19,15 +19,15 @@ class City:
         for l in self.locations:
             l.commute_decision(day_or_nigth)
 
-    def public_commute(self, timeevent, infection_pro):
+    def public_commute(self, timeevent):
         for p in self.citizens:
             if (p.going_to_metro()):
                 self.public_transport.add_person(p)
         
-        self.public_transport.dance(timeevent, infection_pro)
+        self.public_transport.dance(timeevent)
         self.public_transport.clear()
 
-    def commute_and_act(self, timeevent, infection_pro):
+    def commute_and_act(self, timeevent):
 
         for p in self.citizens:
             if(p.next_type_location != p.current_type_location):
@@ -38,7 +38,7 @@ class City:
                 p.current_type_location = p.next_type_location
 
         for l in self.locations:
-            l.dance(timeevent, infection_pro)
+            l.dance(timeevent)
 
     def reset_contacts(self):
         # write contact to DB

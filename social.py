@@ -121,11 +121,11 @@ class Location:
             p_current_status = person.status
             if (len(person.contacts)>0):
                 for contact in person.contacts:
-                    virus.infection(person,contact, time_event)
+                    virus.infection(person,contact.someone, time_event)
                     if person.status != p_current_status:
                         break
 
-    def dance(self, timeevent, infection_pro):
+    def dance(self, timeevent):
         if(not(self.population is None) or len(self.population)>1):
 
             meets(self.population, self.pro_contact, contact_per_zone = 1, timeevent = timeevent)

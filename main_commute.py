@@ -12,9 +12,8 @@ if __name__ == "__main__":
     office = Location('office1', 'w')
     market = Location('store', 'n')
     transportation = Location('mini-metro', 't', 0.1)
-    simulation_days = 30
-    infection_pro = 0.3
-
+    simulation_days = 60
+    
 
     # load strereo types    
     with open('config/stereotypes.json') as json_file:
@@ -34,8 +33,8 @@ if __name__ == "__main__":
     
     my_spots = {'h': home, 'w': office, 'n': market} # per zone in the next main
 
-    workers = [Person(f'worker_{i}', stereotype=active_person,my_spots=my_spots) for i in range(20)]
-    workers_public = [Person(f'p_worker_{i}', stereotype=active_person_public, my_spots=my_spots) for i in range(30)]
+    workers = [Person(f'worker_{i}', stereotype=active_person,my_spots=my_spots) for i in range(15)]
+    workers_public = [Person(f'p_worker_{i}', stereotype=active_person_public, my_spots=my_spots) for i in range(35)]
     homers = [Person(f'homers_{i}', stereotype=passive_person, my_spots=my_spots) for i in range(100)]
     dayers = [Person(f'dayers_{i}', stereotype=passive_person_res, my_spots=my_spots) for i in range(50)]
     
@@ -62,8 +61,8 @@ if __name__ == "__main__":
                     timeevent = f'd{day}_h{ts_count}'
                     print(timeevent)
                     medayork.pulse(d_o_n)
-                    medayork.public_commute(timeevent, infection_pro)                        
-                    medayork.commute_and_act(timeevent, infection_pro)
+                    medayork.public_commute(timeevent)                        
+                    medayork.commute_and_act(timeevent)
                     ts_count += 1
                     medayork.reset_contacts()
                     virus.remove_population(medayork.citizens,timeevent)
@@ -73,8 +72,8 @@ if __name__ == "__main__":
                     timeevent = f'd{day}_h{ts_count}'
                     print(timeevent)
                     medayork.pulse(d_o_n)
-                    medayork.public_commute(timeevent, infection_pro)                        
-                    medayork.commute_and_act(timeevent, infection_pro)
+                    medayork.public_commute(timeevent)                        
+                    medayork.commute_and_act(timeevent)
                     ts_count += 1
                     medayork.reset_contacts()
                     virus.remove_population(medayork.citizens,timeevent)
