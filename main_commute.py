@@ -2,6 +2,8 @@ from medellin import City
 from social import Person, Stereotype, Location
 import pandas as pd
 import json
+import virus
+#import seaborn as sns
 
 
 if __name__ == "__main__":
@@ -37,7 +39,7 @@ if __name__ == "__main__":
     homers = [Person(f'homers_{i}', stereotype=passive_person, my_spots=my_spots) for i in range(100)]
     dayers = [Person(f'dayers_{i}', stereotype=passive_person_res, my_spots=my_spots) for i in range(50)]
     
-    cols = ['day', 'counts']
+    cols = ['day', 'suceptible', 'infected', 'removed']
     results = pd.DataFrame(columns=cols, index=range(simulation_days))
 
     medayork = City('medayork', [home, office, market], public_transport=transportation, 
@@ -64,6 +66,7 @@ if __name__ == "__main__":
                     medayork.commute_and_act(timeevent, infection_pro)
                     ts_count += 1
                     medayork.reset_contacts()
+                    virus.remove_population(medayork.citizens)
             else:
                 for ts in range(2):
                     timeevent = f'd{day}_h{ts_count}'
@@ -73,11 +76,15 @@ if __name__ == "__main__":
                     medayork.commute_and_act(timeevent, infection_pro)
                     ts_count += 1
                     medayork.reset_contacts()
+                    virus.remove_population(medayork.citizens)
 
-        number_of_infected = medayork.count_infected()
-        results.loc[day].counts = number_of_infected
-        print(f' the d{day} we have ' , number_of_infected, " infected")
+        p_suceptible, p_infected, p_removed = medayork.sir_population_count() 
+        results.loc[day].suceptible = p_suceptible
+        results.loc[day].infected = p_infected
+        results.loc[day].removed = p_removed
+        print(f' the d{day} we have ' , p_suceptible, p_infected, p_removed, " suceptible, infected, removed")
         results.loc[day].day = f'd{day}'
 
     print("finish the simulation")
+    #TODO plot curve SIR model
     results.to_csv("results.csv", index = False)

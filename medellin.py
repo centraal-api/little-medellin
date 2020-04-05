@@ -54,6 +54,7 @@ class City:
         
         for infected in persons_to_infect:
             infected.status = 'i'
+            infected.update_vector('','d0_h0')
     
         susceptibles = list(set(self.citizens) - set(persons_to_infect))
         print("person infected:", [p.name for p in persons_to_infect])
@@ -64,9 +65,19 @@ class City:
         counts = list(map(lambda p: p.status == 'i', self.citizens))
         return(np.sum(counts))
     
+    def count_removed(self):
+        counts = list(map(lambda p: p.status == 'r', self.citizens))
+        return(np.sum(counts))
+    
+    def count_suceptible(self):
+        counts = list(map(lambda p: p.status == 's', self.citizens))
+        return(np.sum(counts))
+    
     def return_citizens(self):
         return(self.citizens.copy())
 
+    def sir_population_count(self):
+        return self.count_suceptible(), self.count_infected(),self.count_removed() 
 
             
 

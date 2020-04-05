@@ -3,6 +3,8 @@ from typing import List
 import itertools
 from maths_models import MarkovChain
 from typing import List, Dict
+import virus
+
 
 class Stereotype():
 
@@ -36,7 +38,9 @@ class Person:
         self.current_type_location = 'h'
         self.next_type_location = None
         self.my_spots = my_spots
-    
+        self.social_distance = 1.0
+        self.bad_habits = 1.0
+            
     def meet(self, someone, timeevent):
         self.contacts.append(Contact(someone, timeevent))
 
@@ -110,27 +114,22 @@ class Location:
             for p in self.population:
                 p.decide_destination(self.location_type, day_or_nigth)
 
-    def compute_possibles_infection(self, people_after_day : List [Person], infection_pro: float):
+    def compute_possibles_infection(self, people_after_day : List [Person], time_event: str):
 
         for person in people_after_day:
-            # if the person had conctacts
+            # if the person had conctacts, posible need of copy
+            p_current_status = person.status
             if (len(person.contacts)>0):
                 for contact in person.contacts:
-                    someone = contact.someone
-                    coin = random.random()
-                    condition = (someone.status == 'i') and (coin < infection_pro) and (person.status != 'i') # ask for vector and check time
-                    if (condition): 
-                        person.status = 'i'
-                        person.update_vector(someone.name, contact.timeevent)
-                        print (f"sorry {person.name} you are new positive covid!")
-                        print(f"your vector is {person.vector}")
+                    virus.infection(person,contact, time_event)
+                    if person.status != p_current_status:
                         break
 
     def dance(self, timeevent, infection_pro):
         if(not(self.population is None) or len(self.population)>1):
 
             meets(self.population, self.pro_contact, contact_per_zone = 1, timeevent = timeevent)
-            self.compute_possibles_infection(self.population, infection_pro)
+            self.compute_possibles_infection(self.population, timeevent)
     
     def clear(self):
         self.population=[]
