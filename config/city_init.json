@@ -1,15 +1,30 @@
 { "locations": 
-    { 
-    "h":{ "high": 0.30, "medium":0.60, "low":0.10, "proportion":0.60, "contact_prob": 0.05 },
-    "w":{"high":0.70, "medium":0.20 , "low":0.10, "proportion":0.30, "contact_prob": 0.05 },
-    "n":{"high": 0.30, "medium":0.60, "low":0.10, "proportion":0.10, "contact_prob": 0.02 }    
+    {
+     "location_proportion" : {"h": 0.6, "w": 0.30, "n": 0.1},
+     "type_location_proportion" : {
+        "h": {"high": 0.30, "medium":0.60, "low":0.10}, 
+        "w":  {"high":0.70, "medium":0.20 , "low":0.10} ,
+        "n":  {"high": 0.30, "medium":0.60, "low":0.10}},
+     "contact_prob"    : {"h": 0.05, "w": 0.05, "n": 0.02},
+     "population_spatial_distribution" : {"high": 0.6, "medium": 0.3, "low": 0.1}
     },
 "people":
-{
-    "homers" : 0.60,
-    "worker":0.10,
-    "dayers": 0.10,
-    "public_workers": 0.20   
+
+{   "people_proportion" : 
+    {
+        "homers" : 0.60,
+        "worker":0.10,
+        "dayers": 0.10,
+        "public_workers": 0.20},
+
+    "people_stereotypes":{
+    
+        "homers":{"d": "passive_person_d", "n": "passive_person_n", "public_transport": 0},
+        "worker": {"d": "active_person_d", "n": "active_person_n", "public_transport": 0},
+        "dayers": {"d": "passive_person_res_d", "n": "passive_person_n", "public_transport": 1},
+        "public_workers": {"d": "active_person_d", "n": "active_person_n", "public_transport": 1}
+
+    }
 },
 "suceptibles":100000,
 "total_locations": 1000,

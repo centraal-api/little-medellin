@@ -28,7 +28,7 @@ class Stereotype():
 
 class Person:
 
-    def __init__(self, name, stereotype: Stereotype, my_spots,  status = 's' ):
+    def __init__(self, name, stereotype: Stereotype, my_spots = None,  status = 's' ):
         self.name   = name
         self.status  = status
         self.occupation  =  ''
@@ -40,6 +40,9 @@ class Person:
         self.my_spots = my_spots
         self.social_distance = 1.0
         self.bad_habits = 1.0
+
+    def update_myspots(self, my_spots):
+        self.my_spots = my_spots
             
     def meet(self, someone, timeevent):
         self.contacts.append(Contact(someone, timeevent))
@@ -83,9 +86,10 @@ def meets(people_in_zone : List[Person], pro_contact_zone, contact_per_zone = 1,
 
 class Location:
     
-    def __init__(self, location_name, location_type, pro_contact = 0.05):
+    def __init__(self, location_name, location_type, pro_contact = 0.05, location_density=None):
         self.location_name = location_name
         self.location_type = location_type
+        self.location_density = location_density
         self.population = []
         self.pro_contact = pro_contact
     
