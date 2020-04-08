@@ -19,8 +19,8 @@ def infection (person, person_contact, current_time: str):
             if coin < infection_prob:
                 person.status = 'i'
                 person.update_vector(person_contact.name, current_time) 
-                print (f"sorry {person.name} you are new positive covid!")
-                print(f"your vector is {person.vector}")
+                #print (f"sorry {person.name} you are new positive covid!")
+                #print(f"your vector is {person.vector}")
                        
     else:
         coin = random.random()
@@ -29,8 +29,8 @@ def infection (person, person_contact, current_time: str):
         if coin < infection_prob:
             person.status = 'i'
             person.update_vector(person_contact.name, current_time)
-            print (f"sorry {person.name} you are new positive covid!")
-            print(f"your vector is {person.vector}")
+            #print (f"sorry {person.name} you are new positive covid!")
+            #print(f"your vector is {person.vector}")
     return True
             
 

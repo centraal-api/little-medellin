@@ -34,6 +34,18 @@ class Test_CityBuilder(unittest.TestCase):
         print(jhon_doe.showme_your_id())
         print(jhon_doe.my_spots)
         self.assertGreater(len(jhon_doe.my_spots.keys()), 1)
+    
+    def test_assign_homes(self):
+        ozymandias = CityBuilder(city_file='config/city_init.json')
+        ozymandias.create_locations()
+        ozymandias.populate()
+        ozymandias.load_city()
+        ozymandias.assign_homes()
+        jhon_doe = choice(ozymandias.citizens['homers'])
+        print(jhon_doe.showme_your_id())
+        j_home = jhon_doe.my_spots['h']
+        self.assertTrue(jhon_doe in j_home.population)
+
 
     
     if __name__ == '__main__':

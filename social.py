@@ -4,6 +4,7 @@ import itertools
 from maths_models import MarkovChain
 from typing import List, Dict
 import virus
+import properties
 
 
 class Stereotype():
@@ -38,8 +39,8 @@ class Person:
         self.current_type_location = 'h'
         self.next_type_location = None
         self.my_spots = my_spots
-        self.social_distance = 1.0
-        self.bad_habits = 1.0
+        self.social_distance = properties.SOCIAL_DISTANCING
+        self.bad_habits = properties.BAD_HABITS
 
     def update_myspots(self, my_spots):
         self.my_spots = my_spots
@@ -113,7 +114,8 @@ class Location:
     def commute_decision(self, day_or_nigth):
 
         if (len(self.population)<=0 ):
-            print("the zone is empty!!")
+            pass
+            #print("the zone is empty!!")
         else:
             for p in self.population:
                 p.decide_destination(self.location_type, day_or_nigth)

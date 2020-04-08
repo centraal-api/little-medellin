@@ -3,6 +3,8 @@ import random
 from social import Location, Person, Stereotype
 from numpy.random import choice
 import uuid
+from medellin import City
+
 
 class CityBuilder:
     def __init__(self, city_file: str = 'config/city_init.json', 
@@ -85,6 +87,41 @@ class CityBuilder:
     
     def get_label(self, labels_with_weigths):
         return (choice(list(labels_with_weigths.keys()), p = list(labels_with_weigths.values())))
+
+
+    def assign_homes(self):
+
+        all_city: list[Person] = []
+        [all_city.append(p) for pg in list(self.citizens.values()) for p in pg]
+        for c in all_city:
+            home = c.my_spots['h']
+            home.add_person(c)
+    
+
+    def create_city(self):
+        print("Day 0: creating locations...")
+        self.create_locations()
+        print("Day 1: creating humans...")
+        self.populate()
+        print("Day 2: creating city...")
+        self.load_city()
+        transportation = Location('mini-metro', 't', self.city_distribution['public_trans_contact_prob'])
+        citizens = list(self.citizens.values())
+        locations = list(self.locations_city.values())
+        all_locations: list[Location] = []
+        [all_locations.append(p) for pg in locations for p in pg]
+        print("Day 3: assigning humans to homes...")
+        self.assign_homes()
+        city = City(self.city_distribution['name'], locations=all_locations, public_transport=transportation, citizens=citizens)
+        print("Day 4: infecting humans...")
+        city.initial_infect(self.city_distribution['init_infected'])
+        return city
+        
+       
+    
+        
+
+
 
 
 
