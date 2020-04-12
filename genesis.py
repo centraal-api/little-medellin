@@ -4,11 +4,11 @@ from social import Location, Person, Stereotype
 from numpy.random import choice
 import uuid
 from medellin import City
-
+import neo4j_helper as nea
 
 class CityBuilder:
-    def __init__(self, city_file: str = 'config/city_init.json', 
-        stereo_file = 'config/stereotypes.json'):
+    def __init__(self, city_file: str = './little-medellin/config/city_init.json', 
+        stereo_file = './little-medellin/config/stereotypes.json'):
         # city initialization file    
         with open(city_file) as json_file:
             init_file = json.load(json_file)
@@ -19,7 +19,9 @@ class CityBuilder:
 
         self.city_distribution = init_file
         self.stereos = stereos
-        
+        self.helper = nea.GDBModelHelper("bolt://localhost:7687/neo4j","db_connect","Pr3M0rt3m")
+        self.helper.clear_db()
+
     def create_locations(self):
         number_of_locations = self.city_distribution['total_locations']
         location_types = self.city_distribution['locations']
@@ -36,7 +38,8 @@ class CityBuilder:
                 pro_contact=location_types['contact_prob'][type_location], location_density=density_type)
             l_temp.append(custom_loc)
             loc_dict[type_location]=l_temp
-
+        for k,l in loc_dict.items():
+            self.helper.register_location(l)
         self.locations_city = loc_dict
 
     def populate(self):
@@ -51,27 +54,33 @@ class CityBuilder:
             stereo_dict[key] = Stereotype(key, day_transition_matrix=self.stereos[stereo_value['d']], 
                 night_transition_matrix=self.stereos[stereo_value['n']], 
                 public_transport=stereo_value['public_transport'])
-        
+            self.helper.register_stereotype(stereo_dict[key])
+        city_list = []
         for c in range(number_of_citizens):
             citizen_type = self.get_label(citizen_types)
             l_temp = citizens_dict[citizen_type]
             custom_citizen = Person(f'mac-{str(uuid.uuid4())}', 
                 stereotype=stereo_dict[citizen_type])
+            city_list.append(custom_citizen)
             l_temp.append(custom_citizen)
             citizens_dict[citizen_type]=l_temp
-        
+        self.helper.register_citizen(city_list)
         self.citizens = citizens_dict
 
     def load_city(self):
+        pers_loc = []
         for person_type, persons in self.citizens.items():
             for person in persons:
                 custom_my_spots = {}
                 for location_type, list_of_locations in self.locations_city.items():
                     density_type = self.get_label(self.city_distribution['locations']['population_spatial_distribution'])
-                    custom_my_spots[location_type] = self.get_location_by_density(density_type, list_of_locations)
-            
+                    curr_loc  = self.get_location_by_density(density_type, list_of_locations)
+                    custom_my_spots[location_type] = curr_loc
+                    ploc = {'name':person.name,
+                    'cloc': curr_loc.location_name}
+                    pers_loc.append(ploc)
                 person.update_myspots(custom_my_spots)
-
+        self.helper.register_person_spot(pers_loc)
         return (None)
 
 
@@ -95,6 +104,7 @@ class CityBuilder:
         [all_city.append(p) for pg in list(self.citizens.values()) for p in pg]
         for c in all_city:
             home = c.my_spots['h']
+            self.helper.register_person_home(c,home)
             home.add_person(c)
     
 
@@ -106,6 +116,7 @@ class CityBuilder:
         print("Day 2: creating city...")
         self.load_city()
         transportation = Location('mini-metro', 't', self.city_distribution['public_trans_contact_prob'])
+        self.helper.register_transport(transportation)
         citizens = list(self.citizens.values())
         locations = list(self.locations_city.values())
         all_locations: list[Location] = []

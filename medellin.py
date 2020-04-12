@@ -4,6 +4,7 @@ from social import Location, Person
 import random
 import itertools
 import numpy as np
+import neo4j_helper as nea
 
 class City:
 
@@ -14,6 +15,7 @@ class City:
         all_city = []
         [all_city.append(p) for pg in citizens for p in pg]
         self.citizens = all_city
+        self.helper = nea.GDBModelHelper("bolt://localhost:7687/neo4j","db_connect","Pr3M0rt3m")
 
     def pulse(self, day_or_nigth):
         for l in self.locations:
@@ -42,9 +44,12 @@ class City:
 
     def reset_contacts(self):
         # write contact to DB
+        a=0
+        self.helper.register_meeting(self.citizens)
         for p in self.citizens:
+            a+=len(p.contacts)
             p.contacts = []
-
+        print(">",str(a))
     def initial_infect(self, proportion):
 
         if (type(proportion)==int):
@@ -62,6 +67,8 @@ class City:
         self.citizens = susceptibles + persons_to_infect
 
     def count_infected(self):
+        names = [p.name for p in self.citizens if p.status=='i'][0:10]
+        print(names)
         counts = list(map(lambda p: p.status == 'i', self.citizens))
         return(np.sum(counts))
     

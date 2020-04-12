@@ -1,11 +1,11 @@
 { "locations": 
     {
-     "location_proportion" : {"h": 0.6, "w": 0.30, "n": 0.1},
+     "location_proportion" : {"h": 0.5, "w": 0.25, "n": 0.25},
      "type_location_proportion" : {
-        "h": {"high": 0.30, "medium":0.60, "low":0.10}, 
-        "w":  {"high":0.70, "medium":0.20 , "low":0.10} ,
-        "n":  {"high": 0.30, "medium":0.60, "low":0.10}},
-     "contact_prob"    : {"h": 0.05, "w": 0.05, "n": 0.02},
+        "h": {"high": 0.5, "medium":0.25, "low":0.25}, 
+        "w":  {"high":0.5, "medium":0.25 , "low":0.25} ,
+        "n":  {"high": 0.5, "medium":0.25, "low":0.25}},
+     "contact_prob"    : {"h": 0.05, "w": 0.01, "n": 0.01},
      "population_spatial_distribution" : {"high": 0.6, "medium": 0.3, "low": 0.1}
     },
 "people":
@@ -26,9 +26,9 @@
 
     }
 },
-"suceptibles":10000,
-"total_locations": 1000,
+"suceptibles":2000,
+"total_locations": 100,
 "name":"Little Medallo",
-"public_trans_contact_prob": 0.08,
+"public_trans_contact_prob": 0.06,
 "init_infected": 1
 }

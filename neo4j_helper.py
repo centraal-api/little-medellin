@@ -4,23 +4,26 @@ from random import randint
 import json as jso
 
 class GDBModelHelper(object):
-    def __init__(self, uri, user, password):
+    def __init__(self, uri, user, password,status = True):
         self._driver = GraphDatabase.driver(uri, auth=(user, password), encrypted=False)
-         
+        self._stat = status
     def close(self):
         self._driver.close()
 
     def clear_db(self):
+        if self._stat == False: return
         with self._driver.session() as session:
             
             session.run(f"MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r")
 
     def init_city(self, name):
+        if self._stat == False: return
         with self._driver.session() as session:
             session.run(f'CREATE (c:City) SET c.name="{name}"')
             #session.sync()
 
     def register_stereotype(self, st:s.Stereotype):
+        if self._stat == False: return
         st_name=st.name
         st_dayt=jso.dumps(st.day_transition_matrix.transition_prob)
         st_nightt=jso.dumps(st.night_transition_matrix.transition_prob)
@@ -30,53 +33,87 @@ class GDBModelHelper(object):
             session.run(f"CREATE (st:Stereotype) SET st.name='{st_name}', st.day_transition='{st_dayt}', st.night_transition='{st_nightt}', st.public_transport='{st_pt}' RETURN st")
         
     def register_transport(self, l:s.Location):
+        if self._stat == False: return
         t_name = l.location_name
         t_type = l.location_type
         t_pro = l.pro_contact
         with self._driver.session() as session:
             session.run(f'CREATE (l:Transport) SET l.transport_name="{t_name}", l.transport_type="{t_type}", l.pro_contact ="{t_pro}"')
 
-    def register_citizen(self, p:s.Person):  
+    def register_citizen(self, p, city_name="Medayork"):  
         #, c:s.Ciudad
-        mac = p.name
-        status = p.status
+        if self._stat == False: return
+        transaction = "UNWIND $p_arr as pp WITH pp CREATE (p:Person {mac: pp.mac, status: pp.status}) WITH pp MATCH (c:City) where c.name= pp.city_name CREATE (p)-[:VIVE]->(c)  WITH pp MATCH (st:Stereotype) WHERE st.name= pp.stereotype CREATE (p)-[:ES_UN]->(st)"
+        p_arr = []
+        for pe in p:
+            reg = {'mac': pe.name,
+                'status': pe.status,
+                'city_name': city_name,
+                'stereotype': pe.stereotype.name}
+            p_arr.append(reg)
         with self._driver.session() as session:
-            session.run(f'CREATE (p:Person) SET p.mac="{mac}", p.status="{status}" RETURN p')
+            session.run(transaction, p_arr=p_arr)
         
-    
-    def register_person(self, p:s.Person, city_name="Medayork"):
-        mac = p.name
-        
+    def register_person_spot(self, plocs):
+        if self._stat == False: return
+        transaction = "UNWIND $pl_arr as pl WITH pl MATCH (p:Person) WHERE p.mac = pl.name MATCH(l:Location) where l.location_name = pl.cloc CREATE (p)-[:ESTUVO_EN]->(l)"
         with self._driver.session() as session:
-            session.run(f'MATCH (p:Person) where p.mac="{mac}" MATCH (c:City) where c.name="{city_name}" CREATE (p)-[:VIVE]->(c)')
-            session.run(f'MATCH (st:Stereotype) WHERE st.name="{p.stereotype.name}" MATCH(p:Person) WHERE p.mac="{mac}" CREATE (p)-[:ES_UN]->(st)')
-        
+            session.run(transaction, pl_arr=plocs)
+            
+    def register_person_home(self, p:s.Person, loc:s.Location):
+        if self._stat == False: return
+        mac = p.name
+        with self._driver.session() as session:
+            session.run(f'MATCH (p:Person) where p.mac="{mac}" MATCH (l:Location) where l.name="{loc.location_name}" CREATE (p)-[:HABITA]->(l)')
             
 
-    def register_location(self, l:s.Location, city_name="Medayork"):
-        l_name = l.location_name
-        l_type = l.location_type
-        l_pro = l.pro_contact
+    def register_location(self, ls, city_name="Medayork"):
+        if self._stat == False: return
+        transaction = "UNWIND $l_name AS n MERGE (l:Location  {location_name: n.l_name, location_type: n.l_type,pro_contact: n.l_pro,location_density: n.l_den}) "
+        l_name, l_type, l_pro, l_den = [],[],[],[]
+        for l in ls:
+            reg = {'l_name': l.location_name,
+            'l_type': l.location_type,
+            'l_pro': l.pro_contact,
+            'l_den': l.location_density}
+            l_name.append(reg)        
+            
         with self._driver.session() as session:
-            session.run(f'CREATE (l:Location) SET l.location_name="{l_name}", l.location_type="{l_type}", l.pro_contact ="{l_pro}"')
+            with session.begin_transaction() as tx:
+                tx.run(transaction, l_name=l_name)
+            #session.run()
+
 
 
     def register_commute(self, p:s.Person, l:s.Location, t_name):
+        if self._stat == False: return
         p_mac = p.name
         l_name = l.location_name
         with self._driver.session() as session:
             session.run(f'match(p:Person) where p.mac="{p_mac}" match(l:Location) where l.location_name="{l_name}" CREATE (p)-[:SE_MUEVE {{transporte:"{t_name}"}}]->(l)')
 
-    def register_meeting(self, mac1, mac2, timeevent):
+    def register_meeting(self, pe):
+        if self._stat == False: return
+        transaction = "UNWIND $p_arr AS pi match(p:Person) where p.mac=pi.someone1 match(q:Person) where q.mac=pi.someone2 CREATE (p)-[:MEETS {timestamp:pi.timeevent}]->(q)"
+        p_arr = []
+        for p in pe:
+            for pi in p.contacts:
+                reg = {'someone1': pi.someone.name,
+                        'someone2': p.name,
+                        'timestamp': pi.timeevent
+                        }
+                p_arr.append(reg)
+        print(str(len(p_arrls )))
         with self._driver.session() as session:
-            session.run(f'match(p:Person) where p.mac="{mac1}" match(q:Person) where q.mac="{mac2}" CREATE (p)-[:MEETS {{timestamp:"{timeevent}"}}]->(q)')
+            session.run(transaction, p_arr=p_arr)
 
 
     def get_stereotype(self, stereoType):
+             
         with self._driver.session() as session:
             ls = session.run(f'match (st:Stereotype) where st.name="{stereoType}" match (n:Person)-[:ES_UN]->(st) return n, st')
             lr = ls.records()
-            people_st=[]
+            
             for l in lr:            
                 ite = l.get('n')
                 itt = l.get('st')
