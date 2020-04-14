@@ -21,7 +21,7 @@ if __name__ == "__main__":
             if (d_o_n ==0):
                 
                 for ts in range(3):
-                    timeevent = day +  f'd{day}_h{ts_count}'
+                    timeevent = str(day) +  f'd{day}_h{ts_count}'
                     print(timeevent)
                     little_medallo.pulse(d_o_n)
                     little_medallo.public_commute(timeevent)                        

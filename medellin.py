@@ -5,6 +5,7 @@ import random
 import itertools
 import numpy as np
 import neo4j_helper as nea
+from toolbox import get_timestamp
 
 class City:
 
@@ -23,25 +24,26 @@ class City:
             l.commute_decision(day_or_nigth)
 
     def public_commute(self, timeevent):
+        pubtr = []
         for p in self.citizens:
             if (p.going_to_metro()):
                 self.public_transport.add_person(p)
-                self.helper.register_move(p, timeevent, self.public_transport.location_name)
-        
+                pubtr.append({'p':p.name, 'l':self.public_transport.location_name, 't':get_timestamp(timeevent)})
+        self.helper.register_move(pubtr)
         self.public_transport.dance(timeevent)
         self.public_transport.clear()
 
     def commute_and_act(self, timeevent):
-
+        nloc = []
         for p in self.citizens:
             if(p.next_type_location != p.current_type_location):
                 current_location = p.my_spots[p.current_type_location]
                 next_location = p.my_spots[p.next_type_location]
                 current_location.remove_person(p)
                 next_location.add_person(p)
-                self.helper.register_move(p, timeevent, next_location.location_name)
+                nloc.append({'p':p.name, 'l':next_location.location_name, 't':get_timestamp(timeevent)})
                 p.current_type_location = p.next_type_location
-
+        self.helper.register_move(nloc)
         for l in self.locations:
             l.dance(timeevent)
 

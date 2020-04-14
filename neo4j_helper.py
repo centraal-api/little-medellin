@@ -112,7 +112,11 @@ class GDBModelHelper(object):
         transaction = "UNWIND $i_arr AS pi match(p:Person) where p.mac=pi set p.status='i'"
         with self._driver.session() as session:
             session.run(transaction, i_arr=listInfected)
-
+    
+    def register_move(self, locP:list):
+        transaction = "UNWIND $l_arr AS pi match(p:Person) where p.mac=pi.p match(l:Location) where l.location_name=pi.l CREATE (p)-[:SE_MUEVE {timestamp: pi.t}]->(l)"
+        with self._driver.session() as session:
+            session.run(transaction, l_arr=locP)
 
     def get_stereotype(self, stereoType):
              
