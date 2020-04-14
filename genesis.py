@@ -7,8 +7,8 @@ from medellin import City
 import neo4j_helper as nea
 
 class CityBuilder:
-    def __init__(self, city_file: str = './little-medellin/config/city_init.json', 
-        stereo_file = './little-medellin/config/stereotypes.json'):
+    def __init__(self, city_file: str = './config/city_init.json', 
+        stereo_file = './config/stereotypes.json'):
         # city initialization file    
         with open(city_file) as json_file:
             init_file = json.load(json_file)

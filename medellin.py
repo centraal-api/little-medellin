@@ -67,8 +67,8 @@ class City:
         self.citizens = susceptibles + persons_to_infect
 
     def count_infected(self):
-        names = [p.name for p in self.citizens if p.status=='i'][0:10]
-        print(names)
+        names = [p.name for p in self.citizens if p.status=='i']
+        self.helper.register_infection(names)
         counts = list(map(lambda p: p.status == 'i', self.citizens))
         return(np.sum(counts))
     

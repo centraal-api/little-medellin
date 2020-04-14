@@ -103,9 +103,15 @@ class GDBModelHelper(object):
                         'timestamp': pi.timeevent
                         }
                 p_arr.append(reg)
-        print(str(len(p_arrls )))
+        #print(str(len(p_arrls )))
         with self._driver.session() as session:
             session.run(transaction, p_arr=p_arr)
+
+    def register_infection(self, listInfected):
+        if self._stat == False: return
+        transaction = "UNWIND $i_arr AS pi match(p:Person) where p.mac=pi set p.status='i'"
+        with self._driver.session() as session:
+            session.run(transaction, i_arr=listInfected)
 
 
     def get_stereotype(self, stereoType):
