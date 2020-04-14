@@ -21,7 +21,7 @@ if __name__ == "__main__":
             if (d_o_n ==0):
                 
                 for ts in range(3):
-                    timeevent = f'd{day}_h{ts_count}'
+                    timeevent = day +  f'd{day}_h{ts_count}'
                     print(timeevent)
                     little_medallo.pulse(d_o_n)
                     little_medallo.public_commute(timeevent)                        
@@ -61,7 +61,6 @@ if __name__ == "__main__":
     print(R0)
     results.to_csv("results.csv", index = False)
     results.to_csv("results.csv", index = False)
-
     results = pd.melt(results,id_vars='day',value_vars=["suceptible","infected","removed"], var_name="status")
     #Ploting curve
     ax = sns.relplot(x='day',y='value',hue='status',data=results, kind="line", height=10,aspect=3)

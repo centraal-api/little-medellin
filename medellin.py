@@ -26,6 +26,7 @@ class City:
         for p in self.citizens:
             if (p.going_to_metro()):
                 self.public_transport.add_person(p)
+                self.helper.register_move(p, timeevent, self.public_transport.location_name)
         
         self.public_transport.dance(timeevent)
         self.public_transport.clear()
@@ -38,6 +39,7 @@ class City:
                 next_location = p.my_spots[p.next_type_location]
                 current_location.remove_person(p)
                 next_location.add_person(p)
+                self.helper.register_move(p, timeevent, next_location.location_name)
                 p.current_type_location = p.next_type_location
 
         for l in self.locations:

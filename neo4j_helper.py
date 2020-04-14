@@ -2,6 +2,7 @@ from neo4j import GraphDatabase
 import social as s
 from random import randint
 import json as jso
+from toolbox import get_timestamp
 
 class GDBModelHelper(object):
     def __init__(self, uri, user, password,status = True):
@@ -84,7 +85,6 @@ class GDBModelHelper(object):
             #session.run()
 
 
-
     def register_commute(self, p:s.Person, l:s.Location, t_name):
         if self._stat == False: return
         p_mac = p.name
@@ -100,7 +100,7 @@ class GDBModelHelper(object):
             for pi in p.contacts:
                 reg = {'someone1': pi.someone.name,
                         'someone2': p.name,
-                        'timestamp': pi.timeevent
+                        'timestamp': get_timestamp(pi.timeevent)
                         }
                 p_arr.append(reg)
         #print(str(len(p_arrls )))
