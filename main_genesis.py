@@ -5,6 +5,7 @@ import seaborn as sns
 import properties
 import genesis
 import time
+import numpy as np
 
 if __name__ == "__main__":
 
@@ -50,7 +51,17 @@ if __name__ == "__main__":
         
     toc = time.time()
     print("finish the simulation, total time(seconds): ", toc - tic)
+    results['change_s'] = results['suceptible'] - results['suceptible'].shift()
+    results['beta'] = -results['change_s']*2000/ results['suceptible']/results['infected']
+    results['change_r'] = results['removed'] - results['removed'].shift()
+    results['gamma'] = results['change_r']/ results['infected']
+    results['R0'] = results['beta']/ results['gamma']
+    results= results.replace([np.inf, -np.inf], np.nan)
+    R0 = results['R0'].describe()
+    print(R0)
     results.to_csv("results.csv", index = False)
+    results.to_csv("results.csv", index = False)
+
     results = pd.melt(results,id_vars='day',value_vars=["suceptible","infected","removed"], var_name="status")
     #Ploting curve
     ax = sns.relplot(x='day',y='value',hue='status',data=results, kind="line", height=10,aspect=3)

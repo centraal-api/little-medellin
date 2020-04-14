@@ -4,7 +4,9 @@ from social import Location, Person, Stereotype
 from numpy.random import choice
 import uuid
 from medellin import City
+from typing import List
 import neo4j_helper as nea
+import properties
 
 class CityBuilder:
     def __init__(self, city_file: str = './config/city_init.json', 
@@ -19,7 +21,7 @@ class CityBuilder:
 
         self.city_distribution = init_file
         self.stereos = stereos
-        self.helper = nea.GDBModelHelper("bolt://localhost:7687/neo4j","db_connect","Pr3M0rt3m")
+        self.helper = nea.GDBModelHelper(properties.URI, properties.USER, properties.PASSWORD)
         self.helper.clear_db()
 
     def create_locations(self):
@@ -100,7 +102,7 @@ class CityBuilder:
 
     def assign_homes(self):
 
-        all_city: list[Person] = []
+        all_city: List[Person] = []
         [all_city.append(p) for pg in list(self.citizens.values()) for p in pg]
         for c in all_city:
             home = c.my_spots['h']
@@ -119,11 +121,11 @@ class CityBuilder:
         self.helper.register_transport(transportation)
         citizens = list(self.citizens.values())
         locations = list(self.locations_city.values())
-        all_locations: list[Location] = []
+        all_locations: List[Location] = []
         [all_locations.append(p) for pg in locations for p in pg]
         print("Day 3: assigning humans to homes...")
         self.assign_homes()
-        city = City(self.city_distribution['name'], locations=all_locations, public_transport=transportation, citizens=citizens)
+        city = City(self.city_distribution['name'], locations=all_locations, public_transport=transportation, citizens=citizens, helper=self.helper)
         print("Day 4: infecting humans...")
         city.initial_infect(self.city_distribution['init_infected'])
         return city

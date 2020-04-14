@@ -8,14 +8,15 @@ import neo4j_helper as nea
 
 class City:
 
-    def __init__(self, name, locations: List[Location], public_transport : Location, citizens: List[List[Person]]):
+    def __init__(self, name, locations: List[Location], 
+        public_transport : Location, citizens: List[List[Person]], helper = None):
         self.name = name
         self.locations = locations
         self.public_transport= public_transport
         all_city = []
         [all_city.append(p) for pg in citizens for p in pg]
         self.citizens = all_city
-        self.helper = nea.GDBModelHelper("bolt://localhost:7687/neo4j","db_connect","Pr3M0rt3m")
+        self.helper = helper
 
     def pulse(self, day_or_nigth):
         for l in self.locations:

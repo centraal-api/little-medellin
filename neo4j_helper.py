@@ -119,7 +119,7 @@ class GDBModelHelper(object):
         with self._driver.session() as session:
             ls = session.run(f'match (st:Stereotype) where st.name="{stereoType}" match (n:Person)-[:ES_UN]->(st) return n, st')
             lr = ls.records()
-            
+            people_st = []
             for l in lr:            
                 ite = l.get('n')
                 itt = l.get('st')
@@ -197,7 +197,6 @@ if __name__ == "__main__":
         c_name = str(randint(10,99))+':'+str(randint(10,99))+":"+str(randint(10,99))+":"+str(randint(10,99))
         person = s.Person(name=c_name,stereotype=s_ap,my_spots=[])
         helper.register_citizen(person)
-        helper.register_person(person)
         #Todas las personas van a todas partes
         helper.register_commute(p=person,l=home,t_name= transportation.location_name)
         helper.register_commute(p=person,l=office,t_name= transportation.location_name)
@@ -206,7 +205,6 @@ if __name__ == "__main__":
         c_name = str(randint(10,99))+':'+str(randint(10,99))+":"+str(randint(10,99))+":"+str(randint(10,99))
         person = s.Person(name=c_name,stereotype=s_app,my_spots=[])
         helper.register_citizen(person)
-        helper.register_person(person)
         #Todas las personas van a todas partes
         helper.register_commute(p=person,l=home,t_name= transportation.location_name)
         helper.register_commute(p=person,l=office,t_name= transportation.location_name)
@@ -215,7 +213,6 @@ if __name__ == "__main__":
         c_name = str(randint(10,99))+':'+str(randint(10,99))+":"+str(randint(10,99))+":"+str(randint(10,99))
         person = s.Person(name=c_name,stereotype=s_pp,my_spots=[])
         helper.register_citizen(person)
-        helper.register_person(person)
         #Todas las personas van a todas partes
         helper.register_commute(p=person,l=home,t_name= transportation.location_name)
         helper.register_commute(p=person,l=office,t_name= transportation.location_name)
@@ -224,7 +221,6 @@ if __name__ == "__main__":
         c_name = str(randint(10,99))+':'+str(randint(10,99))+":"+str(randint(10,99))+":"+str(randint(10,99))
         person = s.Person(name=c_name,stereotype=s_ppr,my_spots=[])
         helper.register_citizen(person)
-        helper.register_person(person)
         #Todas las personas van a todas partes
         helper.register_commute(p=person,l=home,t_name= transportation.location_name)
         helper.register_commute(p=person,l=office,t_name= transportation.location_name)
