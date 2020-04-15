@@ -66,7 +66,6 @@ class GDBModelHelper(object):
         mac = p.name
         with self._driver.session() as session:
             session.run(f'MATCH (p:Person) where p.mac="{mac}" MATCH (l:Location) where l.name="{loc.location_name}" CREATE (p)-[:HABITA]->(l)')
-            
 
     def register_location(self, ls, city_name="Medayork"):
         if self._stat == False: return
@@ -94,13 +93,14 @@ class GDBModelHelper(object):
 
     def register_meeting(self, pe):
         if self._stat == False: return
-        transaction = "UNWIND $p_arr AS pi match(p:Person) where p.mac=pi.someone1 match(q:Person) where q.mac=pi.someone2 CREATE (p)-[:MEETS {timestamp: pi.timestamp}]->(q)"
+        transaction = "UNWIND $p_arr AS pi match(p:Person) where p.mac=pi.someone1 match(q:Person) where q.mac=pi.someone2 CREATE (p)-[:MEETS {timestamp: pi.timestamp, proximity: pi.proximity}]->(q)"
         p_arr = []
         for p in pe:
             for pi in p.contacts:
                 reg = {'someone1': pi.someone.name,
                         'someone2': p.name,
-                        'timestamp': get_timestamp(pi.timeevent)
+                        'timestamp': get_timestamp(pi.timeevent),
+                        'proximity': pi.proximity
                         }
                 p_arr.append(reg)
         #print(str(len(p_arrls )))

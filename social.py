@@ -74,6 +74,7 @@ class Contact:
     def __init__(self, someone : Person, timeevent):
         self.someone = someone
         self.timeevent = timeevent
+        self.proximity = random.uniform(1.0, 10.0)
 
 def meets(people_in_zone : List[Person], pro_contact_zone, contact_per_zone = 1, timeevent = ''):
 

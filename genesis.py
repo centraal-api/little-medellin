@@ -117,8 +117,7 @@ class CityBuilder:
         self.populate()
         print("Day 2: creating city...")
         self.load_city()
-        transportation = Location('mini-metro', 't', self.city_distribution['public_trans_contact_prob'])
-        self.helper.register_transport(transportation)
+        transportation = Location('pt_metro', 't', self.city_distribution['public_trans_contact_prob'], 'high')
         citizens = list(self.citizens.values())
         locations = list(self.locations_city.values())
         all_locations: List[Location] = []
@@ -126,6 +125,7 @@ class CityBuilder:
         print("Day 3: assigning humans to homes...")
         self.assign_homes()
         city = City(self.city_distribution['name'], locations=all_locations, public_transport=transportation, citizens=citizens, helper=self.helper)
+        self.helper.register_location([transportation])
         print("Day 4: infecting humans...")
         city.initial_infect(self.city_distribution['init_infected'])
         return city
