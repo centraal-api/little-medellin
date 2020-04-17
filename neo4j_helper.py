@@ -5,6 +5,7 @@ import json as jso
 from toolbox import get_timestamp
 
 class GDBModelHelper(object):
+    
     def __init__(self, uri, user, password,status = True):
         self._driver = GraphDatabase.driver(uri, auth=(user, password), encrypted=False)
         self._stat = status
