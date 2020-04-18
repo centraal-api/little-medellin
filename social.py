@@ -128,7 +128,7 @@ class Location:
             p_current_status = person.status
             if (len(person.contacts)>0):
                 for contact in person.contacts:
-                    virus.infection(person,contact.someone, time_event)
+                    virus.infection(person,contact.someone, contact.proximity, time_event)
                     if person.status != p_current_status:
                         break
 

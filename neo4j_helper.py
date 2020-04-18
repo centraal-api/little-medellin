@@ -45,9 +45,10 @@ class GDBModelHelper(object):
     def register_citizen(self, p, city_name="Medayork"):  
         #, c:s.Ciudad
         if self._stat == False: return
-        transaction = "UNWIND $p_arr as pp WITH pp CREATE (p:Person {mac: pp.mac, status: pp.status})"
+        transaction = """UNWIND $p_arr as pp WITH pp CREATE 
+            (p:Person {mac: pp.mac, status: pp.status, stereotype:pp.stereotype })"""
         transaction2 = "UNWIND $p_arr as pp WITH pp MATCH (c:City) where c.name = pp.city_name CREATE (p)-[:VIVE]->(c)"
-        transaction3 = "UNWIND $p_arr as pp WITH pp MATCH (st:Stereotype) WHERE st.name = pp.stereotype CREATE (p)-[:ES_UN {stat: pp.status}]->(st)"
+        #transaction3 = "UNWIND $p_arr as pp WITH pp MATCH (st:Stereotype) WHERE st.name = pp.stereotype CREATE (p)-[:ES_UN {stat: pp.status}]->(st)"
         p_arr = []
         for pe in p:
             reg = {'mac': pe.name,
@@ -58,7 +59,7 @@ class GDBModelHelper(object):
         with self._driver.session() as session:
             session.run(transaction, p_arr=p_arr)
             session.run(transaction2, p_arr=p_arr)
-            session.run(transaction3, p_arr=p_arr)
+            #session.run(transaction3, p_arr=p_arr)
         
     def register_person_spot(self, plocs):
         if self._stat == False: return

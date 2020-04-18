@@ -3,7 +3,7 @@ import random
 import toolbox
 import properties
 
-def infection (person, person_contact, current_time: str):
+def infection (person, person_contact, proximity: float, current_time: str):
     incubation_time = properties.INCUBATION_TIME
     infection_base_prob = properties.INFECTION_BASE_PROB
     if (person.status == 'r') or (person_contact.status == 'r') or (person.status == person_contact.status) or (person.status == 'i'):
@@ -16,7 +16,8 @@ def infection (person, person_contact, current_time: str):
         if ((current_day-day_infected) >= incubation_time) and (current_hour >= hour_infected):
             infection_prob = infection_base_prob * person.bad_habits * person.social_distance
             coin = random.random()
-            if coin < infection_prob:
+            adjusted_infection_prob = infection_prob if proximity <= 2 else infection_prob/2
+            if coin < adjusted_infection_prob:
                 person.status = 'i'
                 person.update_vector(person_contact.name, current_time) 
                 #print (f"sorry {person.name} you are new positive covid!")

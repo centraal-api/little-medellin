@@ -69,8 +69,22 @@ class Test_Project(unittest.TestCase):
     def test_create_meets_community_graph(self):
         alg_helper = GDBAlgHelper(driver=None, uri=properties.URI, 
             user= properties.USER, password=properties.PASSWORD)
-        modularity = alg_helper.create_meets_community_graph('near-community', 'd0_h4', proximity=2)
+        modularity = alg_helper.create_meets_community_graph('near-community', 'd0_h4', proximity="<=2")
         print(modularity)
+
+    def test_create_commute_community_graph(self):
+        alg_helper = GDBAlgHelper(driver=None, uri=properties.URI, 
+            user= properties.USER, password=properties.PASSWORD)
+        modularity = alg_helper.create_se_mueve_community_graph('commute-community', 'd0_h4')
+        print(modularity)
+
+    def test_get_persons_df(self):
+        alg_helper = GDBAlgHelper(driver=None, uri=properties.URI, 
+            user= properties.USER, password=properties.PASSWORD)
+        df = alg_helper.get_persons_df()
+        print(df.sample(3))
+        self.assertEqual(len(df.columns), len(alg_helper.person_features))
+
         
 
 
