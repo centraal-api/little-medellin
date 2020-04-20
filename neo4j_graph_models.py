@@ -60,12 +60,12 @@ class GDBAlgHelper():
     def create_se_mueve_community_graph(self, graph_name, time_event):
         today = toolbox.get_timestamp(time_event)
         d_ago = today - 15*24*3600
-        node_query = 'MATCH (n:Person) RETURN id(n) AS id'
+        node_query = 'MATCH (n) WHERE n:Person OR n:Location RETURN id(n) AS id'
         relation_query = f"""MATCH (a:Person)-[m:SE_MUEVE]->(l:Location) WHERE m.timestamp >= {d_ago} 
             AND m.timestamp <= {today} RETURN id(a) AS source, id(l) AS target"""
         self.create_graph_catalog(graph_name, node_query, relation_query)
         model_query =f"CALL gds.louvain.write('{graph_name}',"
-        model_query = model_query +  " { writeProperty: 'community_commute }) YIELD modularity"
+        model_query = model_query +  " { writeProperty: 'community_commute' }) YIELD modularity"
         modularity = self.run_query(model_query)
         modularity = modularity.data()[0]['modularity']
         self.delete_graph_catalog(graph_name)

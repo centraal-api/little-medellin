@@ -64,8 +64,9 @@ if __name__ == "__main__":
         features['high_pro_mod'] = high_pro_mod
         features['commute_mod'] = commute_mod
         person_features = pd.concat([person_features, features], ignore_index = True)
-
-
+        for c in ['high_promity', 'low_proximity', 'community_commute']:
+            person_features[f'infected_in_{c}'] = (person_features.groupby([c])['status']
+                .transform(lambda x: np.sum(x=='i')))
         
     toc = time.time()
     print("finish the simulation, total time(seconds): ", toc - tic)
