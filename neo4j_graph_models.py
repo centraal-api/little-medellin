@@ -25,14 +25,26 @@ class GDBAlgHelper():
         results = self.run_query(f"CALL gds.graph.exists('{catalog_name}') YIELD exists;")
         return (results.value()[0])
 
-    def create_graph_catalog(self, catalog_name,  node_query, relation_query):
+    def create_graph_catalog(self, catalog_name,  node_query, relation_query, mode = 'cypher'):
+        """ create a graph catalog based on chyper or in native way
+        catalog_name = name of graph catalog
+        node_query =  cypher query for nodes (mode = cypher)  or list of nodes labels
+        relation_query =  cypher query for realtions (mode = cypher)  or list of relations labels
+        mode = (cypher or other), it is assumend native if the mode != cypher
+        """
         if (self.check_graph_catalog(catalog_name)):
             raise Exception("graph  already exists")
         else:
-            query = f"""CALL gds.graph.create.cypher( '{catalog_name}',
-            '{node_query}',
-            '{relation_query}')
-            """
+
+            if (mode == 'cypher'):
+                query = f"""CALL gds.graph.create.cypher( '{catalog_name}',
+                    '{node_query}','{relation_query}')"""
+               
+            else:
+                query = f"""CALL gds.graph.create('{catalog_name}',  
+                    [{",".join([f"'{c}'" for c in node_query])}], 
+                     [{",".join([f"'{c}'" for c in relation_query])}])"""
+
             self.run_query(query)
 
     def delete_graph_catalog(self, catalog_name):
@@ -70,6 +82,20 @@ class GDBAlgHelper():
         modularity = modularity.data()[0]['modularity']
         self.delete_graph_catalog(graph_name)
         return(modularity)
+
+
+    def get_similarity(self, graph_name, prop, node_query=['Person', 'Location'], 
+        relation=['SE_MUEVE_15', 'MEETS_15']):
+        self.create_graph_catalog(graph_name, node_query=node_query, 
+            relation_query=relation, mode = 'native')
+        model_query = f"""CALL gds.nodeSimilarity.stream('{graph_name}', {{ {prop} }})
+            YIELD node1, node2, similarity
+            RETURN gds.util.asNode(node1).mac AS mac, gds.util.asNode(node2).mac AS mac2, 
+            gds.util.asNode(node2).status as status_simil, similarity"""
+        similarity = self.run_query(model_query)
+        similarity = pd.DataFrame(similarity.data())
+        self.delete_graph_catalog(graph_name)
+        return(similarity)
 
     def get_persons_df(self):
         person_q = f"MATCH (p:Person) RETURN {','. join([f'p.{f} AS {f}' for f in self.person_features])}"

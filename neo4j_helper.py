@@ -90,6 +90,11 @@ class GDBModelHelper(object):
             #session.run()
 
 
+    def delete_relation(self, limit, name):
+        with self._driver.session() as session:
+            query = f"MATCH (p:Person)-[m:{name}]-() WHERE m.timestamp<= {limit} DELETE m"
+            session.run(query)
+
     def register_commute(self, p:s.Person, l:s.Location, t_name):
         if self._stat == False: return
         p_mac = p.name
@@ -99,7 +104,8 @@ class GDBModelHelper(object):
 
     def register_meeting(self, pe):
         if self._stat == False: return
-        transaction = "UNWIND $p_arr AS pi match(p:Person) where p.mac=pi.someone1 match(q:Person) where q.mac=pi.someone2 CREATE (p)-[:MEETS {timestamp: pi.timestamp, proximity: pi.proximity}]->(q)"
+        transaction = "UNWIND $p_arr AS pi match(p:Person) where p.mac=pi.someone1 match(q:Person) where q.mac=pi.someone2      CREATE (p)-[:MEETS {timestamp: pi.timestamp, proximity: pi.proximity}]->(q)"
+        transaction15 = "UNWIND $p_arr AS pi match(p:Person) where p.mac=pi.someone1 match(q:Person) where q.mac=pi.someone2      CREATE (p)-[:MEETS_15 {timestamp: pi.timestamp, proximity: pi.proximity}]->(q)"
         p_arr = []
         for p in pe:
             for pi in p.contacts:
@@ -112,6 +118,7 @@ class GDBModelHelper(object):
         #print(str(len(p_arrls )))
         with self._driver.session() as session:
             session.run(transaction, p_arr=p_arr)
+            session.run(transaction15, p_arr=p_arr)
 
     def register_infection(self, listInfected):
         if self._stat == False: return
@@ -121,8 +128,10 @@ class GDBModelHelper(object):
     
     def register_move(self, locP:list):
         transaction = "UNWIND $l_arr AS pi match(p:Person) where p.mac=pi.p match(l:Location) where l.location_name=pi.l CREATE (p)-[:SE_MUEVE {timestamp: pi.t}]->(l)"
+        transaction15 = "UNWIND $l_arr AS pi match(p:Person) where p.mac=pi.p match(l:Location) where l.location_name=pi.l CREATE (p)-[:SE_MUEVE_15 {timestamp: pi.t}]->(l)"
         with self._driver.session() as session:
             session.run(transaction, l_arr=locP)
+            session.run(transaction15, l_arr=locP)
 
     def get_stereotype(self, stereoType):
              

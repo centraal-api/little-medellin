@@ -26,8 +26,8 @@
 
     }
 },
-"suceptibles":2000,
-"total_locations": 100,
+"suceptibles":800,
+"total_locations": 80,
 "name":"Little Medallo",
 "public_trans_contact_prob": 0.06,
 "init_infected": 1

@@ -85,10 +85,13 @@ class Test_Project(unittest.TestCase):
         print(df.sample(3))
         self.assertEqual(len(df.columns), len(alg_helper.person_features))
 
-        
-
-
-    
+    def test_get_similarity(self):
+        alg_helper = GDBAlgHelper(driver=None, uri=properties.URI, 
+            user= properties.USER, password=properties.PASSWORD)
+        df = alg_helper.get_similarity('test_sim', "topK: 1", relation=['SE_MUEVE', 'MEETS'])
+        print(df.sample(3))
+        self.assertEqual(len(df.columns), 4)
+   
     
     if __name__ == '__main__':
         unittest.main()

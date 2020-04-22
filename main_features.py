@@ -7,6 +7,7 @@ import genesis
 import time
 import numpy as np
 from neo4j_graph_models import GDBAlgHelper
+import toolbox as tb
 
 if __name__ == "__main__":
 
@@ -52,6 +53,10 @@ if __name__ == "__main__":
         results.loc[day].removed = p_removed
         print(f' the d{day} we have ' , p_suceptible, p_infected, p_removed, " suceptible, infected, removed")
         results.loc[day].day = day
+        print("delete 'old' relations")
+        limit = tb.get_timestamp(timeevent) - 15*24*3600
+        city_builder.helper.delete_relation(limit, 'SE_MUEVE_15')
+        city_builder.helper.delete_relation(limit, 'MEETS_15')
         print("compute graph features")
         low_pro_mod = alg_helper.create_meets_community_graph('low-meets-graph', timeevent, 
             prop=alg_helper.person_features[2] , proximity='<=2')
@@ -63,11 +68,17 @@ if __name__ == "__main__":
         features['low_pro_mod'] = low_pro_mod
         features['high_pro_mod'] = high_pro_mod
         features['commute_mod'] = commute_mod
+        sim_top1 = (alg_helper.get_similarity('top-sim', prop='topK: 1')
+            .rename(columns = {'similarity': 'similarity_top1'}))
+        sim_bottom1 =( alg_helper.get_similarity('bottom-sim', prop='bottomK: 1')
+            .rename(columns = {'similarity': 'similarity_bottom1'}))
+        features = pd.merge(features, sim_top1, on = 'mac', how = 'left')
+        features = pd.merge(features, sim_bottom1, on = 'mac', how = 'left')
         person_features = pd.concat([person_features, features], ignore_index = True)
         for c in ['high_promity', 'low_proximity', 'community_commute']:
             person_features[f'infected_in_{c}'] = (person_features.groupby([c])['status']
                 .transform(lambda x: np.sum(x=='i')))
-        
+    
     toc = time.time()
     print("finish the simulation, total time(seconds): ", toc - tic)
     results['change_s'] = results['suceptible'] - results['suceptible'].shift()
