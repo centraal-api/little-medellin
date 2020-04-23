@@ -78,6 +78,8 @@ class City:
         return(np.sum(counts))
     
     def count_removed(self):
+        names = [p.name for p in self.citizens if p.status=='r']
+        self.helper.register_remove(names)
         counts = list(map(lambda p: p.status == 'r', self.citizens))
         return(np.sum(counts))
     

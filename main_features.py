@@ -74,11 +74,13 @@ if __name__ == "__main__":
             .rename(columns = {'similarity': 'similarity_bottom1'}))
         features = pd.merge(features, sim_top1, on = 'mac', how = 'left')
         features = pd.merge(features, sim_bottom1, on = 'mac', how = 'left')
-        person_features = pd.concat([person_features, features], ignore_index = True)
+        
         for c in ['high_promity', 'low_proximity', 'community_commute']:
-            person_features[f'infected_in_{c}'] = (person_features.groupby([c])['status']
+            features[f'infected_in_{c}'] = (features.groupby([c])['status']
                 .transform(lambda x: np.sum(x=='i')))
-    
+
+        person_features = pd.concat([person_features, features], ignore_index = True)
+        
     toc = time.time()
     print("finish the simulation, total time(seconds): ", toc - tic)
     results['change_s'] = results['suceptible'] - results['suceptible'].shift()
